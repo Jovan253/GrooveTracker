@@ -1,6 +1,8 @@
-# Shell only — services are sketched here but not yet buildable/runnable.
-# Dockerfiles land in 001.6 (backend) / 001.9 (frontend); this file is
-# wired up and verified end-to-end in 001.10.
+# Wired and verified end-to-end in 001.10: db (healthchecked) -> backend
+# (waits for db to be healthy, then migrates and serves) -> frontend
+# (static bundle, calls the backend directly from the browser — see the
+# CORS_ORIGIN and VITE_API_URL comments below for why that's a
+# cross-origin call and how it's made to work).
 
 services:
   db:
@@ -14,31 +16,95 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-    # TODO (001.10): healthcheck so backend waits for db to accept connections
+    # `pg_isready` asks the server itself whether it's accepting connections
+    # for this user/db, rather than us guessing from the outside (e.g.
+    # sleeping a fixed amount, or just checking the container is "running").
+    # That's the signal `depends_on: condition: service_healthy` below keys
+    # off of. start_period gives Postgres' first-boot init (initdb, creating
+    # the POSTGRES_DB/POSTGRES_USER) a grace window before failures count
+    # against `retries`.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   backend:
-    build: ./backend
+    build:
+      # Context is the repo root (not ./backend) so the Dockerfile can COPY
+      # in the repo-root db/ directory (migrations) alongside backend/ — see
+      # the comment at the top of backend/Dockerfile for the full reasoning.
+      context: .
+      dockerfile: backend/Dockerfile
     restart: unless-stopped
     depends_on:
-      - db
+      # A plain `depends_on: [db]` (or the short-form list syntax) only
+      # waits for the db *container to start* — Docker considers that
+      # satisfied the instant the postgres process is launched, which is
+      # well before Postgres has finished init and is actually accepting
+      # connections. `condition: service_healthy` instead makes Compose
+      # wait for the db healthcheck above to report healthy before it even
+      # creates the backend container.
+      #
+      # This matters more here than in a typical "db + api" pair: the
+      # backend's entrypoint (docker-entrypoint.sh) runs `node
+      # src/migrate.js` before the server starts, and `set -e` means a
+      # failed migration (e.g. "connection refused" because Postgres isn't
+      # up yet) exits the container immediately. Combined with `restart:
+      # unless-stopped`, an unhealthy dependency wait would otherwise
+      # crash-loop the backend — it'd keep retrying, and would probably
+      # eventually succeed once Postgres came up, but noisily and
+      # non-deterministically. Waiting on service_healthy makes first-run
+      # startup ordering deterministic instead of "usually works, restarts
+      # a few times, then works."
+      db:
+        condition: service_healthy
     environment:
       # Fixed inside the container; BACKEND_PORT only picks the host port below.
       PORT: 3000
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # The browser (not the backend container) is the actual cross-origin
+      # caller — the frontend is static JS served by nginx that then runs
+      # in the user's browser and fetches this API directly at
+      # http://localhost:${BACKEND_PORT} (see the frontend service's
+      # VITE_API_URL comment below for why it's not routed through the
+      # compose network). That makes every browser request to this API
+      # cross-origin from http://localhost:${FRONTEND_PORT}, so without
+      # this the browser blocks the response before app code ever sees it
+      # (see backend/src/index.js for where this is read and applied).
+      CORS_ORIGIN: http://localhost:${FRONTEND_PORT:-5173}
     ports:
       - "${BACKEND_PORT:-3000}:3000"
-    # TODO (001.6): Dockerfile runs `npm run migrate` then starts the server
+    # Entrypoint runs `node src/migrate.js` then `exec`s into the server —
+    # see backend/docker-entrypoint.sh.
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        # VITE_API_URL is inlined into the static bundle at build time by
+        # Vite (see frontend/Dockerfile) — it is NOT a runtime container
+        # env var, so it must be passed as a build arg here rather than
+        # under `environment:` below. This is the *browser's* view of the
+        # backend (localhost:<host port>), not the backend's in-network
+        # hostname, since the browser runs on the host, outside the
+        # compose network.
+        VITE_API_URL: http://localhost:${BACKEND_PORT:-3000}
     restart: unless-stopped
+    # Plain (no `condition:`) — this only orders container start (frontend
+    # after backend), which mostly buys us a shorter wait before the first
+    # manual reload succeeds. It's NOT the same guarantee as db's
+    # service_healthy above, and it can't be: nginx here only ever serves
+    # static files it already has on disk from the image, so there's
+    # nothing at frontend startup that talks to the backend for this to
+    # gate on. The browser is what actually calls the backend later, over
+    # the network — see the VITE_API_URL/CORS_ORIGIN comments in this file.
     depends_on:
       - backend
-    environment:
-      VITE_API_URL: http://localhost:${BACKEND_PORT:-3000}
     ports:
       - "${FRONTEND_PORT:-5173}:80"
-    # TODO (001.9): multi-stage build, nginx serves the static bundle on :80
+    # nginx serves the static bundle on :80 (see frontend/Dockerfile).
 
 volumes:
   db_data:

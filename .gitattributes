@@ -1,0 +1,12 @@
+# Normalize line endings. Without this, core.autocrlf=true on a Windows
+# checkout hands out CRLF, which breaks shell scripts run inside Linux
+# containers (`/bin/sh^M: bad interpreter`) and can confuse other tooling.
+
+# Default: let git decide text vs binary, and normalize text to LF in the repo.
+* text=auto eol=lf
+
+# Files that MUST stay LF regardless of platform (executed inside containers).
+*.sh   text eol=lf
+Dockerfile      text eol=lf
+*.Dockerfile    text eol=lf
+docker-entrypoint.sh text eol=lf

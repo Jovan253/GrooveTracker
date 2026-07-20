@@ -1,6 +1,6 @@
 # 001 — Project scaffolding (local dev foundation)
 
-- **Status:** approved
+- **Status:** complete — all tasks done, verified end-to-end (2026-07-20)
 - **Author:** Opus (planner role — custom agent pending session reload)
 - **Date:** 2026-07-20
 
@@ -128,13 +128,13 @@ and all Kubernetes/observability/CI-CD work (later plans).
 ## Task breakdown
 
 - [x] 001.1 — Repo skeleton: create `frontend/ backend/ db/` dirs, root `docker-compose.yml` shell, root `.env.example`, `.dockerignore`s.
-- [ ] 001.2 — DB migration: `db/migrations/001_create_albums.sql` + optional `db/seed.sql`.
-- [ ] 001.3 — Backend bootstrap: `package.json`, Express server, `config.js` (env), `db.js` (pg Pool), `GET /healthz`.
-- [ ] 001.4 — Migration runner: `backend/src/migrate.js` + `npm run migrate` with a `schema_migrations` table.
-- [ ] 001.5 — Albums API: `routes/albums.js` implementing the CRUD table above with validation.
-- [ ] 001.6 — Backend Dockerfile + `.dockerignore`; container runs migrate then starts server.
-- [ ] 001.7 — Frontend bootstrap: Vite React app, `api.js` reading `VITE_API_URL`.
-- [ ] 001.8 — Frontend UI: album list + add form + delete, wired to the API.
-- [ ] 001.9 — Frontend Dockerfile (multi-stage build → nginx static serve) + `.dockerignore`.
-- [ ] 001.10 — `docker-compose.yml`: db + backend + frontend wired via env; verify end-to-end (`docker compose up`, add/list/delete an album).
-- [ ] 001.11 — Root `README.md`: how to run locally.
+- [x] 001.2 — DB migration: `db/migrations/001_create_albums.sql` + optional `db/seed.sql`.
+- [x] 001.3 — Backend bootstrap: `package.json`, Express server, `config.js` (env), `db.js` (pg Pool), `GET /healthz`.
+- [x] 001.4 — Migration runner: `backend/src/migrate.js` + `npm run migrate` with a `schema_migrations` table.
+- [x] 001.5 — Albums API: `routes/albums.js` implementing the CRUD table above with validation.
+- [x] 001.6 — Backend Dockerfile + `.dockerignore`; container runs migrate then starts server.
+- [x] 001.7 — Frontend bootstrap: Vite React app, `api.js` reading `VITE_API_URL`.
+- [x] 001.8 — Frontend UI: album list + add form + delete, wired to the API.
+- [x] 001.9 — Frontend Dockerfile (multi-stage build → nginx static serve) + `.dockerignore`.
+- [x] 001.10 — `docker-compose.yml`: db + backend + frontend wired via env; verify end-to-end (`docker compose up`, add/list/delete an album).
+- [x] 001.11 — Root `README.md`: how to run locally.

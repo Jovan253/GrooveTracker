@@ -1,0 +1,25 @@
+# Scoped to backend/Dockerfile: BuildKit prefers a `<dockerfile>.dockerignore`
+# sitting next to the Dockerfile over a shared root .dockerignore (there
+# isn't one yet). The build context is the repo root (see backend/Dockerfile
+# for why), so patterns below are anchored with `**/` where they need to
+# match below the top level — a bare `node_modules` only matches a
+# repo-root ./node_modules, not backend/node_modules or frontend/node_modules.
+**/node_modules
+**/npm-debug.log*
+**/.git
+**/.env
+**/.env.*
+!**/.env.example
+**/dist
+**/coverage
+**/*.md
+
+# Not part of the backend image; keeps the context handed to the daemon
+# small and avoids unrelated changes (e.g. frontend edits) busting layer
+# cache for this build.
+frontend/
+k8s/
+plans/
+tasks/
+.claude/
+.github/

@@ -8,3 +8,10 @@ dist
 build
 coverage
 *.md
+
+# Not part of the image; excluding keeps the build context small and avoids
+# unrelated edits busting layer cache. VITE_API_URL is supplied via
+# `docker build --build-arg` (see docker-compose.yml), not a mounted .env,
+# so excluding real .env files above doesn't lose anything the build needs.
+.vscode
+.idea
