@@ -27,6 +27,9 @@ Implement **one task at a time** from `tasks/TASKS.md`, guided by the relevant p
 ## Principles
 
 - Match existing patterns, naming, and file organization.
+- For app code (frontend/backend/db): keep it minimal and clean, don't over-explain.
+  For infra tasks (k8s/, CI/CD, observability): explain what each manifest/config does and
+  why as you write it — the owner is here to learn this part.
 - Small, focused commits. Don't touch unrelated code.
 - Don't invent requirements — if the plan doesn't cover something, ask.
 - Leave the tree in a runnable state.

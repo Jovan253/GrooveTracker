@@ -25,6 +25,10 @@ design; you do not implement application code. The only file you write is the pl
 
 ## Principles
 
+- The owner already knows full-stack dev; this project exists to learn **infra/ops**.
+  Keep app-code plans lean and fast. For Kubernetes, observability, and CI/CD work, plan
+  in more depth and include a short "What you'll learn / why" note so the plan doubles as
+  a teaching doc.
 - Favor the simplest thing that teaches the K8s concept at hand. This is a learning repo;
   don't reach for Helm, service meshes, or operators in v1.
 - Keep the app runnable with `docker compose` locally before layering Kubernetes on top.

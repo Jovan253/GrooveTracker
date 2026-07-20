@@ -25,6 +25,24 @@ tasks/           # task tracking (see tasks/TASKS.md)
 .claude/         # agents, commands, settings
 ```
 
+## Learning focus (read this first)
+
+The owner already knows full-stack development. **The point of this project is to learn
+the infrastructure and operations side, not the app.** Pace work accordingly:
+
+- **Move fast on app code** (React frontend, Node API, Postgres schema, CRUD). Scaffold it,
+  keep it minimal-but-clean, don't belabor it or over-explain it. It exists to give the
+  infra something real to run.
+- **Slow down and teach on the infra.** When we reach Kubernetes, Prometheus/Grafana,
+  CI/CD pipelines, Docker internals, ingress, autoscaling, secrets, or anything
+  ops/observability-related: stop, explain the concepts and the *why*, show the trade-offs,
+  and walk through what each piece does before and after applying it.
+
+Topics of interest (deep-dive when we hit them): Kubernetes core objects, Helm (v2+),
+Prometheus + Grafana, CI/CD (GitHub Actions → build/test/deploy), container/image best
+practices, health checks & probes, horizontal autoscaling, secrets/config management,
+logging & tracing.
+
 ## Product scope (v1)
 
 - Users can add albums they own with: title, artist, format (vinyl/CD), year, cover art.
