@@ -16,7 +16,6 @@ _(none)_
 
 **Plan 001 — Project scaffolding** (`plans/001-project-scaffolding.md`)
 
-- [ ] 001.2 DB migration — `db/migrations/001_create_albums.sql` + optional seed.
 - [ ] 001.3 Backend bootstrap — Express, `config.js` (env), `db.js` (pg Pool), `GET /healthz`.
 - [ ] 001.4 Migration runner — `backend/src/migrate.js` + `npm run migrate`.
 - [ ] 001.5 Albums API — CRUD routes with validation.
@@ -29,6 +28,7 @@ _(none)_
 
 ## Done
 
+- [x] 001.2 DB migration — `db/migrations/001_create_albums.sql` + `db/seed.sql`. — 2026-07-20
 - [x] 001.1 Repo skeleton — dirs, root `docker-compose.yml` shell, `.env.example`, `.dockerignore`s. — 2026-07-20
 - [x] Set up AI tooling: `.claude/` (agents, commands, settings), `plans/`, `tasks/` — 2026-07-20
 

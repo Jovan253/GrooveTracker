@@ -15,7 +15,8 @@
       "Bash(docker compose:*)",
       "Bash(kubectl get:*)",
       "Bash(kubectl describe:*)",
-      "Bash(kubectl logs:*)"
+      "Bash(kubectl logs:*)",
+      "Bash(git check-ignore *)"
     ],
     "ask": [
       "Bash(git push:*)",
