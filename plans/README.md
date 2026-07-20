@@ -16,4 +16,4 @@ Design docs and implementation plans for GrooveTracker. One file per feature or 
 
 | Plan | Status |
 |------|--------|
-| _(none yet)_ | |
+| [001 — Project scaffolding](001-project-scaffolding.md) | approved |
